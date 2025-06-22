@@ -306,13 +306,18 @@
         }
 
         .project-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-        }
+    display: flex; /* Thêm */
+    flex-direction: column; /* Thêm */
+    justify-content: space-between; /* Giữ nguyên */
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    height: 100%;
+    padding: 20px; /* thêm padding nếu cần */
+}
 
         .project-card:hover {
             transform: translateY(-10px);
@@ -346,16 +351,19 @@
             margin-bottom: 1rem;
         }
 
-        .project-button {
-            display: inline-block;
-            padding: 8px 20px;
-            border: 2px solid var(--primary-color);
-            color: var(--primary-color);
-            text-decoration: none;
-            border-radius: 25px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
+       
+.project-button {
+    display: inline-block;
+    padding: 8px 20px;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    text-decoration: none;
+    border-radius: 25px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    align-self: flex-start; /* Căn nút về bên trái */
+    margin-top: auto; /* Đẩy nút xuống cuối */
+}
 
         .project-button:hover {
             background: var(--primary-color);
