@@ -136,8 +136,8 @@
         }
 
 .hero-avatar {
-    width: 400px;
-    height: 400px;
+    width: 235px;
+    height: 235px;
     border-radius: 50%;
     overflow: hidden; /* Giúp bo tròn ảnh luôn */
     margin: 0 auto 2rem;
