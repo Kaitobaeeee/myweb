@@ -141,7 +141,7 @@
     border-radius: 50%;
     overflow: hidden; /* Giúp bo tròn ảnh luôn */
     margin: 0 auto 2rem;
-    box-shadow: 0 10px 40px rgba(0, 191, 255, 0.3);
+        box-shadow: 0 10px 40px rgba(28, 158, 181, 0.9);
     animation: float 3s ease-in-out infinite;
     
 }
