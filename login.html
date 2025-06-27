@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Starry Login & Signup Page</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.min.js"></script>
+    <!-- Google Sign-In -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #2a1a5e 0%, #1a1a3d 70%, #0f0f2a 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial', sans-serif;
+        }
+
+        #canvas-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .auth-container {
+            position: relative;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 350px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .auth-container h2 {
+            color: #fff;
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .auth-container input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 25px;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            transition: background 0.3s ease;
+        }
+
+        .auth-container input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .auth-container input:focus {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .auth-container button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #6b48ff, #00ddeb);
+            border: none;
+            border-radius: 25px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .auth-container button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 221, 235, 0.5);
+        }
+
+        .social-login {
+            margin-top: 20px;
+        }
+
+        .social-login button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        .social-login img {
+            width: 24px;
+            height: 24px;
+        }
+
+        .toggle-link {
+            margin-top: 20px;
+        }
+
+        .toggle-link a {
+            color: #00ddeb;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .toggle-link a:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 400px) {
+            .auth-container {
+                width: 80%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div>
+    <div class="auth-container" id="auth-container">
+        <!-- Login Form -->
+        <div id="login-form">
+            <h2>Login</h2>
+            <form id="login-form-submit">
+                <input type="text" id="login-username" placeholder="Username" required>
+                <input type="password" id="login-password" placeholder="Password" required>
+                <button type="submit">Sign In</button>
+            </form>
+            <div class="social-login">
+                <button onclick="facebookLogin()">
+                    <img src="https://cdn-icons-png.flaticon.com/512/5968/5968764.png" alt="Facebook">
+                    Sign in with Facebook
+                </button>
+                <div id="g_id_onload"
+                     data-client_id="YOUR_GOOGLE_CLIENT_ID"
+                     data-callback="handleGoogleSignIn"
+                     data-auto_prompt="false">
+                </div>
+                <button class="g_id_signin" data-type="standard" data-shape="pill" data-theme="outline" data-text="signin_with" data-size="large">
+                    <img src="https://cdn-icons-png.flaticon.com/512/281/281764.png" alt="Google">
+                    Sign in with Google
+                </button>
+            </div>
+            <div class="toggle-link">
+                <p>Don't have an account? <a href="#" onclick="showSignup()">Sign Up</a></p>
+            </div>
+        </div>
+        <!-- Signup Form -->
+        <div id="signup-form" style="display: none;">
+            <h2>Sign Up</h2>
+            <form id="signup-form-submit">
+                <input type="text" id="signup-username" placeholder="Username" required>
+                <input type="email" id="signup-email" placeholder="Email" required>
+                <input type="password" id="signup-password" placeholder="Password" required>
+                <button type="submit">Sign Up</button>
+            </form>
+            <div class="social-login">
+                <button onclick="facebookLogin()">
+                    <img src="https://cdn-icons-png.flaticon.com/512/5968/5968764.png" alt="Facebook">
+                    Sign up with Facebook
+                </button>
+                <div id="g_id_onload_signup"
+                     data-client_id="YOUR_GOOGLE_CLIENT_ID"
+                     data-callback="handleGoogleSignIn"
+                     data-auto_prompt="false">
+                </div>
+                <button class="g_id_signin" data-type="standard" data-shape="pill" data-theme="outline" data-text="signup_with" data-size="large">
+                    <img src="https://cdn-icons-png.flaticon.com/512/281/281764.png" alt="Google">
+                    Sign up with Google
+                </button>
+            </div>
+            <div class="toggle-link">
+                <p>Already have an account? <a href="#" onclick="showLogin()">Sign In</a></p>
+            </div>
+        </div>
+    </div>
+    <script>
+        // p5.js Background Code
+        let stars = [];
+        let numStars = 50;
+        let particles = [];
+        let numParticles = 100;
+
+        function setup() {
+            let canvas = createCanvas(windowWidth, windowHeight);
+            canvas.parent('canvas-container');
+
+            for (let i = 0; i < numStars; i++) {
+                stars.push(new Star());
+            }
+
+            for (let i = 0; i < numParticles; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function draw() {
+            background(0, 50);
+
+            for (let particle of particles) {
+                particle.update();
+                particle.display();
+            }
+
+            for (let star of stars) {
+                star.update();
+                star.display();
+            }
+
+            for (let i = 0; i < stars.length; i++) {
+                for (let j = i + 1; j < stars.length; j++) {
+                    let d = dist(stars[i].x, stars[i].y, stars[j].x, stars[j].y);
+                    if (d < 120) {
+                        let alpha = map(d, 0, 120, 150, 0);
+                        stroke(150, 150, 255, alpha);
+                        strokeWeight(1);
+                        line(stars[i].x, stars[i].y, stars[j].x, stars[j].y);
+                    }
+                }
+            }
+        }
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+        }
+
+        class Star {
+            constructor() {
+                this.x = random(width);
+                this.y = random(height);
+                this.size = random(3, 6);
+                this.speedX = random(-0.4, 0.4);
+                this.speedY = random(-0.4, 0.4);
+                this.color = this.randomColor();
+            }
+
+            randomColor() {
+                let colors = [
+                    [150, 255, 255],
+                    [255, 150, 255],
+                    [255, 255, 255]
+                ];
+                return random(colors);
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x < 0 || this.x > width) this.speedX *= -1;
+                if (this.y < 0 || this.y > height) this.speedY *= -1;
+            }
+
+            display() {
+                for (let r = this.size * 2; r > 0; r -= 0.5) {
+                    let alpha = map(r, 0, this.size * 2, 0, 100);
+                    noStroke();
+                    fill(this.color[0], this.color[1], this.color[2], alpha);
+                    ellipse(this.x, this.y, r, r);
+                }
+            }
+        }
+
+        class Particle {
+            constructor() {
+                this.x = random(width);
+                this.y = random(height);
+                this.size = random(1, 2);
+                this.speedX = random(-0.2, 0.2);
+                this.speedY = random(-0.2, 0.2);
+                this.brightness = random(100, 200);
+                this.twinkleSpeed = random(0.02, 0.05);
+                this.twinklePhase = random(TWO_PI);
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x < 0 || this.x > width) this.speedX *= -1;
+                if (this.y < 0 || this.y > height) this.speedY *= -1;
+
+                this.brightness = map(sin(frameCount * this.twinkleSpeed + this.twinklePhase), -1, 1, 50, 200);
+            }
+
+            display() {
+                noStroke();
+                fill(255, 255, 255, this.brightness);
+                ellipse(this.x, this.y, this.size, this.size);
+            }
+        }
+
+        // Form Toggle Functions
+        function showSignup() {
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('signup-form').style.display = 'block';
+        }
+
+        function showLogin() {
+            document.getElementById('signup-form').style.display = 'none';
+            document.getElementById('login-form').style.display = 'block';
+        }
+
+        // Form Submission Handling with Basic Validation
+        document.getElementById('login-form-submit').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value;
+            
+            if (username.length < 3) {
+                alert('Username must be at least 3 characters long');
+                return;
+            }
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters long');
+                return;
+            }
+            
+            alert(`Logging in with Username: ${username}`);
+            // Add your backend login API call here
+        });
+
+        document.getElementById('signup-form-submit').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('signup-username').value.trim();
+            const email = document.getElementById('signup-email').value.trim();
+            const password = document.getElementById('signup-password').value;
+            
+            if (username.length < 3) {
+                alert('Username must be at least 3 characters long');
+                return;
+            }
+            if (!email.includes('@') || !email.includes('.')) {
+                alert('Please enter a valid email address');
+                return;
+            }
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters long');
+                return;
+            }
+            
+            alert(`Signing up with Username: ${username}, Email: ${email}`);
+            // Add your backend signup API call here
+        });
+
+        // Facebook Login
+        window.fbAsyncInit = function() {
+            try {
+                FB.init({
+                    appId: 'YOUR_FACEBOOK_APP_ID',
+                    cookie: true,
+                    xfbml: true,
+                    version: 'v20.0'
+                });
+            } catch (error) {
+                console.error('Facebook SDK initialization failed:', error);
+                alert('Facebook login initialization failed. Please try again later.');
+            }
+        };
+
+        // Load Facebook SDK dynamically
+        (function(d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s); js.id = id;
+            js.src = "https://connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+
+        function facebookLogin() {
+            if (typeof FB === 'undefined') {
+                alert('Facebook SDK not loaded. Please try again.');
+                return;
+            }
+            
+            FB.login(function(response) {
+                if (response.authResponse) {
+                    FB.api('/me', { fields: 'name,email' }, function(response) {
+                        if (response.error) {
+                            alert('Facebook Login failed: ' + response.error.message);
+                            return;
+                        }
+                        alert(`Facebook Login Success: ${response.name}`);
+                        // Add your logic to handle Facebook login
+                    });
+                } else {
+                    alert('Facebook Login cancelled or failed');
+                }
+            }, { scope: 'public_profile,email' });
+        }
+
+        // Google Sign-In
+        function handleGoogleSignIn(credentialResponse) {
+            if (!credentialResponse.credential) {
+                alert('Google Sign-In failed. Please try again.');
+                return;
+            }
+            const idToken = credentialResponse.credential;
+            alert('Google Sign-In Success');
+            // Add your logic to handle Google token (e.g., verify with backend)
+        }
+    </script>
+</body>
+</html>
